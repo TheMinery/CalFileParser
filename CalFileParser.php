@@ -18,7 +18,7 @@ class CalFileParser {
     private $_file_name = '';
     private $_output = 'array';
     private $DTfields = array('DTSTART', 'DTEND', 'DTSTAMP', 'CREATED', 'EXDATE', 'LAST-MODIFIED');
-    private $_user_timezone = null;
+    private $_user_timezone = 'America/Toronto';
     private $_file_timezone = null;
 
     function __construct() {
@@ -186,6 +186,9 @@ class CalFileParser {
             case 'json' :
                 return json_encode($events_arr);
                 break;
+            case 'html' :
+                return $this->htmlCal($events_arr);
+                break;
             default :
                 return $events_arr;
                 break;
@@ -245,6 +248,10 @@ class CalFileParser {
         }
 
         return $return;
+    }
+
+    private function htmlCal($arEvents) {
+
     }
 
     /**
