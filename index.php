@@ -1,6 +1,6 @@
 <?php
 
-include('../CalFileParser.php');
+include('./CalFileParser.php');
 
 $cal = new CalFileParser();
 
