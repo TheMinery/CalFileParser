@@ -298,7 +298,8 @@ class CalFileParser {
                     // set date key without format
                     $key = $date_key;
 
-                    $timezone = $this->_file_timezone;
+                    //$timezone = $this->_file_timezone;
+                    $timezone = 'America/Toronto';
 
                     // found time zone in date format info
                     if (strstr($date_format,"TZID")) $timezone = substr($date_format, 5);
@@ -314,7 +315,7 @@ class CalFileParser {
                         if (substr($date_value, -1) == "Z") $timezone = "UTC";
 
                         // format date
-                        $date = DateTime::createFromFormat('Ymd\THis', str_replace('Z', '', $date_value), new DateTimeZone($timezone));
+                        $date = DateTime::createFromFormat('Ymd\THis', str_replace('Z', '', $date_value), new DateTimeZone('EST'));
                         if ($date !== false) $date->setTimezone(new DateTimeZone($this->_user_timezone));
 
                         if ($date !== false) $processed_value[] = $date;
