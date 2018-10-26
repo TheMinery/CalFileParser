@@ -1,6 +1,7 @@
 <?php
 
 //echo 'foo';
+date_default_timezone_set('America/Toronto');
 
 include('./CalFileParser.php');
 
@@ -9,17 +10,18 @@ $cal = new CalFileParser();
 $arCal = $cal->parse('https://outlook.office365.com/owa/calendar/c5442ed2c52f432f8a848d9a8975f8d5@theminery.com/4a96e7f80425489e9df4af236e0ee9c07269803195692693419/calendar.ics');
 $arEvents = array();
 $dateToday = strtotime('midnight');
+$startingDate = strtotime('last monday', strtotime('next sunday'));
+$endingDate = strtotime('+12 days', $startingDate);
 
 foreach ($arCal as $calEvent) {
-    if ($calEvent['DTSTART']->getTimestamp() > $dateToday) {
+    if (($calEvent['DTSTART']->getTimestamp() > $startingDate) && ($calEvent['DTSTART']->getTimestamp() < $endingDate))  {
         array_push($arEvents, $calEvent);
     }
 }
 
 //pr($arCal);
-$startingDate = strtotime('last monday', strtotime('next sunday'));
-$arDates = getCalDates($startingDate);
 
+$arDates = getCalDates($startingDate);
 
 ?>
 <!DOCTYPE html>
@@ -40,23 +42,23 @@ $arDates = getCalDates($startingDate);
     </tr><tr>
         <td>Monday</td>
         <td><?php echo eventsForDate($arDates[0], $arEvents); ?></td>
-        <td>&nbsp;</td>
+        <td><?php echo eventsForDate($arDates[5], $arEvents); ?></td>
     </tr><tr>
         <td>Tuesday</td>
         <td><?php echo eventsForDate($arDates[1], $arEvents); ?></td>
-        <td>&nbsp;</td>
+        <td><?php echo eventsForDate($arDates[6], $arEvents); ?></td>
     </tr><tr>
         <td>Wednesday</td>
         <td><?php echo eventsForDate($arDates[2], $arEvents); ?></td>
-        <td>&nbsp;</td>
+        <td><?php echo eventsForDate($arDates[7], $arEvents); ?></td>
     </tr><tr>
         <td>Thursday</td>
         <td><?php echo eventsForDate($arDates[3], $arEvents); ?></td>
-        <td>&nbsp;</td>
+        <td><?php echo eventsForDate($arDates[8], $arEvents); ?></td>
     </tr><tr>
         <td>Friday</td>
         <td><?php echo eventsForDate($arDates[4], $arEvents); ?></td>
-        <td>&nbsp;</td>
+        <td><?php echo eventsForDate($arDates[9], $arEvents); ?></td>
     </tr>
 </table>
 
@@ -65,11 +67,12 @@ $arDates = getCalDates($startingDate);
 
 <?php
 function eventsForDate($thisDate, $arEvents) {
-    $out = '<!-- ' . date('Y-m-d', $thisDate) . ' -->';
+    $out = '<!-- ' . date('Y-m-d', $thisDate) . ' -->' . "\n";
     $tomorrow = strtotime('tomorrow', $thisDate);
     foreach($arEvents as $event) {
         if (($event['DTSTART']->getTimestamp() > $thisDate) && ($event['DTSTART']->getTimestamp() < $tomorrow)) {
-            $out .= '<div>' . date('H:i', $event['DTSTART']->getTimestamp()) . ' - ' . date('H:i', $event['DTEND']->getTimestamp()) . '</div>';
+            $out .= '<!-- DTSTART = ' . date('Y-m-d H:i:s', $event['DTSTART']->getTimestamp()) . ' - DTEND = ' . date('Y-m-d H:i:s', $event['DTEND']->getTimestamp()) . ' -->' . "\n";
+            $out .= '<div>' . date('H:i', $event['DTSTART']->getTimestamp()) . ' - ' . date('H:i', $event['DTEND']->getTimestamp()) . '</div>' . "\n";
         }
     }
     return $out;
