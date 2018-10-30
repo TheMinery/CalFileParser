@@ -7,17 +7,16 @@ include('./CalFileParser.php');
 
 $cal = new CalFileParser();
 
-$arCal = $cal->parse('https://outlook.office365.com/owa/calendar/c5442ed2c52f432f8a848d9a8975f8d5@theminery.com/4a96e7f80425489e9df4af236e0ee9c07269803195692693419/calendar.ics');
-$arEvents = array();
-$dateToday = strtotime('midnight');
+$arCalConference = $cal->parse('https://outlook.office365.com/owa/calendar/c5442ed2c52f432f8a848d9a8975f8d5@theminery.com/4a96e7f80425489e9df4af236e0ee9c07269803195692693419/calendar.ics');
+$arCalMeeting = $cal->parse('https://outlook.office365.com/owa/calendar/70f8d3fed5f64da58f165cb623e8b777@theminery.com/8a77e07cb2984acda13ca1a5e5fcdc6310097253832692424173/calendar.ics');
 $startingDate = strtotime('last monday', strtotime('next sunday'));
 $endingDate = strtotime('+12 days', $startingDate);
+$arConference = getCurrentEvents($arCalConference, $startingDate, $endingDate);
+$arMeeting = getCurrentEvents($arCalMeeting, $startingDate, $endingDate);
+//$arEvents = array();
+//$dateToday = strtotime('midnight');
 
-foreach ($arCal as $calEvent) {
-    if (($calEvent['DTSTART']->getTimestamp() > $startingDate) && ($calEvent['DTSTART']->getTimestamp() < $endingDate))  {
-        array_push($arEvents, $calEvent);
-    }
-}
+
 
 //pr($arCal);
 
@@ -28,54 +27,62 @@ $arDates = getCalDates($startingDate);
 <html>
 <head>
 <title>WRKHUB Conference Room</title>
+<link rel="stylesheet" type="text/css" href="./css/cfp.css" />
 </head>
 <body>
-
-<h1>Conference Room Schedule</h1>
-<!-- <?php print_r($arEvents); ?> -->
-<!-- <?php print_r($arDates); ?> -->
-<table border="1">
-    <tr>
-        <th>&nbsp;</th>
-        <th><?php echo getWeek(0); ?></th>
-        <th><?php echo getWeek(1); ?></th>
-    </tr><tr>
-        <td>Monday</td>
-        <td><?php echo eventsForDate($arDates[0], $arEvents); ?></td>
-        <td><?php echo eventsForDate($arDates[5], $arEvents); ?></td>
-    </tr><tr>
-        <td>Tuesday</td>
-        <td><?php echo eventsForDate($arDates[1], $arEvents); ?></td>
-        <td><?php echo eventsForDate($arDates[6], $arEvents); ?></td>
-    </tr><tr>
-        <td>Wednesday</td>
-        <td><?php echo eventsForDate($arDates[2], $arEvents); ?></td>
-        <td><?php echo eventsForDate($arDates[7], $arEvents); ?></td>
-    </tr><tr>
-        <td>Thursday</td>
-        <td><?php echo eventsForDate($arDates[3], $arEvents); ?></td>
-        <td><?php echo eventsForDate($arDates[8], $arEvents); ?></td>
-    </tr><tr>
-        <td>Friday</td>
-        <td><?php echo eventsForDate($arDates[4], $arEvents); ?></td>
-        <td><?php echo eventsForDate($arDates[9], $arEvents); ?></td>
-    </tr>
-</table>
-
+<section>
+    <div id="conference">
+    <h1>Conference Room Schedule</h1>
+<?php $thisDay = strtotime('last sunday'); ?>
+<?php for($i=0; $i<7; $i++) : ?>
+    <?php $thisDay = strtotime('+1 day', $thisDay); ?>
+    <?php if ((date('l', $thisDay) != "Saturday") && (date('l', $thisDay) != "Sunday")) : ?>
+    <div class="day">
+        <h3><?php echo date('l F jS', $thisDay); ?></h3>
+        <div><?php echo eventsForDate($thisDay, $arConference); ?></div>
+    </div>
+    <?php endif; ?>
+<?php endfor; ?>
+    </div>
+    <div id="meeting">
+    <h1>Meeting Room Schedule</h1>
+<?php $thisDay = strtotime('last sunday'); ?>
+<?php for($i=0; $i<7; $i++) : ?>
+    <?php $thisDay = strtotime('+1 day', $thisDay); ?>
+    <?php if ((date('l', $thisDay) != "Saturday") && (date('l', $thisDay) != "Sunday")) : ?>
+    <div class="day">
+        <h3><?php echo date('l F jS', $thisDay); ?></h3>
+        <div><?php echo eventsForDate($thisDay, $arMeeting); ?></div>
+    </div>
+    <?php endif; ?>
+<?php endfor; ?>
+    </div>
+</section>
 </body>
 </html>
 
 <?php
 function eventsForDate($thisDate, $arEvents) {
-    $out = '<!-- ' . date('Y-m-d', $thisDate) . ' -->' . "\n";
+    $out = '';
     $tomorrow = strtotime('tomorrow', $thisDate);
     foreach($arEvents as $event) {
         if (($event['DTSTART']->getTimestamp() > $thisDate) && ($event['DTSTART']->getTimestamp() < $tomorrow)) {
-            $out .= '<!-- DTSTART = ' . date('Y-m-d H:i:s', $event['DTSTART']->getTimestamp()) . ' - DTEND = ' . date('Y-m-d H:i:s', $event['DTEND']->getTimestamp()) . ' -->' . "\n";
+            //$out .= '<!-- DTSTART = ' . date('Y-m-d H:i:s', $event['DTSTART']->getTimestamp()) . ' - DTEND = ' . date('Y-m-d H:i:s', $event['DTEND']->getTimestamp()) . ' -->' . "\n";
             $out .= '<div>' . date('H:i', $event['DTSTART']->getTimestamp()) . ' - ' . date('H:i', $event['DTEND']->getTimestamp()) . '</div>' . "\n";
         }
     }
+    $out = ($out == '') ? 'Nothing scheduled today.':$out;
     return $out;
+}
+
+function getCurrentEvents($arCal, $startingDate, $endingDate) {
+    $arEvents = array();
+    foreach ($arCal as $calEvent) {
+        if (($calEvent['DTSTART']->getTimestamp() > $startingDate) && ($calEvent['DTSTART']->getTimestamp() < $endingDate))  {
+            array_push($arEvents, $calEvent);
+        }
+    }
+    return $arEvents;
 }
 
 function getCalDates($startDate) {

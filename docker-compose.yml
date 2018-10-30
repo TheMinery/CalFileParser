@@ -6,4 +6,4 @@ services:
     ports:
       - '80:80'
     volumes:
-      - ./htdocs:/var/www/html/htdocs/
+      - ./:/var/www/html/htdocs/
