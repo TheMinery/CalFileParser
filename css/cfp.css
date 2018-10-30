@@ -1,0 +1,41 @@
+body {
+    background: url(../images/people-working.jpg) no-repeat;
+    background-size: cover;
+    background-position: center 2px;
+    font-size: 200%;
+}
+
+h3 {
+    margin: .4em 0 0 0;
+}
+
+section>div {
+    width: 48%;
+}
+
+section>div div {
+    margin-left: 3em;
+}
+
+section>div {
+    float: right;
+}
+
+section>div:first-child {
+    float: left;
+}
+
+.tbl-cal, .tbl-cal th, .tbl-cal td {
+    border: 1px outset #C0C0C0;
+    
+}
+
+.tbl-cal th, .tbl-cal td {
+    border-style: outset;
+    padding: .1em;
+    background-color: rgba(235, 235, 235, 0.801);
+}
+
+.tbl-cal td:not(:first-child) {
+    text-align: center;
+}
