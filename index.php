@@ -32,7 +32,6 @@ $arMeeting = getCurrentEvents($arCalMeeting, $startingDate, $endingDate);
 <link rel="stylesheet" type="text/css" href="./css/cfp.css" />
 </head>
 <body>
-<p>foo</p>
 <!-- <?php print_r($arCalMeeting); ?> -->
 <!-- <?php print_r($arMeeting); ?> -->
 <section>
