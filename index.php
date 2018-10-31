@@ -38,7 +38,7 @@ $arMeeting = getCurrentEvents($arCalMeeting, $startingDate, $endingDate);
     <div id="conference">
     <h1>Conference Room Schedule</h1>
 <?php $thisDay = $startingDate; ?>
-<?php for($i=0; $i<7; $i++) : ?>
+<?php for($i=0; $i<8; $i++) : ?>
     <?php $thisDay = strtotime('+1 day', $thisDay);; ?>
     <?php if ((date('l', $thisDay) != "Saturday") && (date('l', $thisDay) != "Sunday")) : ?>
     <div class="day">
@@ -51,7 +51,7 @@ $arMeeting = getCurrentEvents($arCalMeeting, $startingDate, $endingDate);
     <div id="meeting">
     <h1>Meeting Room Schedule</h1>
 <?php $thisDay = $startingDate; ?>
-<?php for($i=0; $i<7; $i++) : ?>
+<?php for($i=0; $i<8; $i++) : ?>
     <?php $thisDay = strtotime('+1 day', $thisDay); ?>
     <?php if ((date('l', $thisDay) != "Saturday") && (date('l', $thisDay) != "Sunday")) : ?>
     <div class="day">
@@ -75,7 +75,7 @@ function eventsForDate($thisDate, $arEvents) {
             $out .= '<div>' . date('H:i', $event['DTSTART']->getTimestamp()) . ' - ' . date('H:i', $event['DTEND']->getTimestamp()) . '</div>' . "\n";
         }
     }
-    $out = ($out == '') ? 'Nothing scheduled today.':$out;
+    $out = ($out == '') ? 'Nothing scheduled!':$out;
     return $out;
 }
 
